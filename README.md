@@ -70,4 +70,9 @@ mailer.saveMails(function(err) {
 });
 ```
 
+License
+==========
+
+MIT
+
 
