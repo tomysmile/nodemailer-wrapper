@@ -10,7 +10,7 @@ var EmailSent = require('./models/mailerSent');
 var async = require('async');
 var _ = require('lodash');
 
-var Mailer = function(transportConfig, databaseConfig) {
+var Mailer = function(databaseConfig, transportConfig) {
 
   var self = this;
   var transporter;
@@ -50,16 +50,23 @@ var Mailer = function(transportConfig, databaseConfig) {
   };
 
   var init = function() {
+
+    if (!databaseConfig) {
+      throw new Error("database configuration is missing !");
+    }
+
     // connect to DB
     mongoose.connect(databaseConfig);
 
     // initialize transporter
-    var mailConfig = transportConfig.config;
+    if (transportConfig) {
+      var mailConfig = transportConfig.config;
 
-    if (transportConfig.transportType === 'smtp') {
-      transporter = nodemailer.createTransport(smtpPool(mailConfig));
-    } else {
-      transporter = nodemailer.createTransport(mailConfig);
+      if (transportConfig.transportType === 'smtp') {
+        transporter = nodemailer.createTransport(smtpPool(mailConfig));
+      } else {
+        transporter = nodemailer.createTransport(mailConfig);
+      }
     }
 
     // trigger onInit
@@ -80,7 +87,6 @@ var Mailer = function(transportConfig, databaseConfig) {
     callback = (callback || noop);
 
     if (mailData) {
-      // Add it to the collection.
       addedMails.push(mailData);
     }
 
@@ -96,7 +102,7 @@ var Mailer = function(transportConfig, databaseConfig) {
 
   var savePreparedMails = function(callback) {
     if (addedMails.length) {
-      // save buffer mail to outbox DB
+
       EmailOutbox.collection.insert(addedMails, function(err) {
         if (err) {
           callback(err);
@@ -104,25 +110,19 @@ var Mailer = function(transportConfig, databaseConfig) {
 
         // clear array
         addedMails.length = 0;
-
-        // move to next step
         callback(null);
       });
     } else {
       callback(null);
     }
 
-    // Return this object reference to allow for method chaining.
     return (this);
   };
 
   var sendMails = function(callback) {
-
-    var counter = 0;
-
-    // Make sure a callback is defined.
     callback = (callback || noop);
 
+    var counter = 0;
     var sentMails = [];
     var successIDMails = [];
     var falseIDMails = [];
@@ -137,13 +137,15 @@ var Mailer = function(transportConfig, databaseConfig) {
       },
       function(emails, callback) {
         _.each(emails, function(email) {
-          transporter.sendMail(email, function(err, info) {
-            sendCounter++;
+          if (transporter) {
+            transporter.sendMail(email, function(err, info) {
+              sendCounter++;
 
-            console.log(info.response);
+              console.log(info.response);
 
-            callback(null, email);
-          });
+              callback(null, email);
+            });
+          }
         });
       },
       function(email, callback) {
@@ -185,6 +187,13 @@ var Mailer = function(transportConfig, databaseConfig) {
     });
   };
 
+  var close = function(callback) {
+    mongoose.connection.close(function() {
+      process.exit(0);
+      callback();
+    });
+  };
+
   wireEvents();
   init();
 
@@ -193,7 +202,8 @@ var Mailer = function(transportConfig, databaseConfig) {
     prepareMail: prepareMail,
     getPreparedMails: getPreparedMails,
     saveMails: savePreparedMails,
-    send: sendMails
+    send: sendMails,
+    close: close
   }
 };
 

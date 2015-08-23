@@ -34,7 +34,7 @@ var transportConfig = {
 var mongodbConfig = 'mongodb://localhost:27017/mailerDemo';
 
 // create new wrapper instance
-var mailer = new nodeMailer(transportConfig, mongodbConfig);
+var mailer = new nodeMailer(mongodbConfig, transportConfig);
 
 var mail1 = {
   from: 'your-mail@mail-server',
@@ -77,6 +77,14 @@ Database Related
 There are 2 tables created for this utility to works:
 - mail_outboxes: which hold all the emails that is goint to send
 - mail_sents: hold all sent emails
+
+To save email into database, at least the database connection info required on the instance creation. Example:
+
+```javascript
+// create new wrapper instance without transportation configuration
+// usefull for adding emails into database only and without actually sending it
+var mailer = new nodeMailer(mongodbConfig);
+```
 
 Please check the models source code for more detail about the table schema.
 
