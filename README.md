@@ -1,7 +1,8 @@
 # NodeMailer-Wrapper
 
-Nodemailer-Wrapper is a utility module which provides a wrapper for NodeMailer [NodeMailer](https://github.com/andris9/Nodemailer) that uses MongoDB as the email storage. This utility is designed to run asynchronously as a batch file or cron worker, I suggest to use [Node-Cron](https://github.com/ncb000gt/node-cron) which runs perfectly with this. This module designed for
-use with [Node.js](http://nodejs.org) and installable via `npm install nodemailer-wrapper`,
+Nodemailer-Wrapper is a utility module which provides a wrapper for NodeMailer [NodeMailer](https://github.com/andris9/Nodemailer) that uses MongoDB as the backend. This utility is built with asynchronously in mind as a batch or cron worker, I suggest to use [Node-Cron](https://github.com/ncb000gt/node-cron) which runs perfectly with this.
+
+This module designed for use with [Node.js](http://nodejs.org) and installable via `npm install nodemailer-wrapper`,
 
 Usage (basic):
 ==========
@@ -31,6 +32,8 @@ var transportConfig = {
 
 // use your mongodb address
 var mongodbConfig = 'mongodb://localhost:27017/mailerDemo';
+
+// create new wrapper instance
 var mailer = new nodeMailer(transportConfig, mongodbConfig);
 
 var mail1 = {
@@ -39,10 +42,6 @@ var mail1 = {
   subject: 'hello world',
   text: 'hello world!',
   html: '<b>Hello World! </b>'
-  attachments: [{ 
-    filename: 'README.md',
-    path: './demo.txt'
-  }]
 };
 
 var mail2 = {
@@ -50,7 +49,7 @@ var mail2 = {
   to: 'target-mail-2@mail-server',
   subject: 'hello world',
   text: 'hello world!',
-  html: '<b>Hello World! </b>'
+  html: '<b>Hello World! </b>',
   attachments: [{ 
     filename: 'README.md',
     path: './demo.txt'
@@ -59,7 +58,6 @@ var mail2 = {
 
 mailer.prepareMail(mail1);
 mailer.prepareMail(mail2);
-mailer.prepareMail(mail3);
 
 mailer.saveMails(function(err) {
   console.info('mails have been saved !');
@@ -69,6 +67,10 @@ mailer.saveMails(function(err) {
   });
 });
 ```
+
+More Example
+==========
+Please check [NodeMailer](https://github.com/andris9/Nodemailer) for more detail about mail data parameters.
 
 License
 ==========
