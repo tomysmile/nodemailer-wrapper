@@ -72,6 +72,14 @@ More Example
 ==========
 Please check [NodeMailer](https://github.com/andris9/Nodemailer) for more detail about mail data parameters.
 
+Database Related
+==========
+There are 2 tables created for this utility to works:
+- mail_outboxes: which hold all the emails that is goint to send
+- mail_sents: hold all sent emails
+
+Please check the models source code for more detail about the table schema.
+
 License
 ==========
 
