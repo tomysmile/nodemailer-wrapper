@@ -1,6 +1,6 @@
 {
   "name": "nodemailer-wrapper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "node mailer wrapper using MongoDB",
   "main": "index.js",
   "scripts": {
