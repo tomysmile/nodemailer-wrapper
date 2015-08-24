@@ -1,27 +1,7 @@
 var should = require("chai").should;
+var path = require('path');
 var nodeMailer = require('../index');
-
-var mongodbConfig = 'mongodb://localhost:27017/mailerDemo';
-
-var transportConfig = {
-  transportType: 'smtp',
-  config: {
-    host: 'your-mailserver', // hostname
-    secureConnection: false, // TLS requires secureConnection to be false
-    port: 587, // port for secure SMTP
-    auth: {
-      user: 'your-user',
-      pass: 'your-password'
-    },
-    // use up to 20 parallel connections
-    maxConnections: 20,
-    // do not send more than 10 messages per connection
-    maxMessages: 10,
-    tls: {
-      rejectUnauthorized: false
-    }
-  }
-};
+var config = require(path.resolve(__dirname, 'config'));
 
 var mail1 = {
   from: 'abc@abc.def',    // fix this for actual send
@@ -58,7 +38,7 @@ describe("nodemailer", function() {
   describe("constructor checking", function() {
 
     it("should have at least database configuration", function() {
-      mailer = new nodeMailer(mongodbConfig, transportConfig);
+      mailer = new nodeMailer(config.emailDatabase, config.mailConfig);
     });
 
   });
